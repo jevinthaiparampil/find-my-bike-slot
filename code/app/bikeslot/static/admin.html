@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Bike Slot admin</title>
+  <script src="/static/theme.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="page wide">
+    <header class="masthead">
+      <div class="team">
+        <svg class="team-mark" viewBox="0 0 24 24" role="img" aria-label="Team NextGen">
+          <rect y="16" width="8" height="8" rx="2" fill="currentColor"/>
+          <rect x="8" y="8" width="8" height="8" rx="2" fill="currentColor"/>
+          <rect x="16" width="8" height="8" rx="2" fill="#2a78d6"/>
+        </svg>
+        <div>
+          <p class="team-name">NEXTGEN</p>
+          <p class="team-credit">Endress+Hauser challenge at BaselHack 2026</p>
+        </div>
+      </div>
+      <div class="brand">
+        <p class="eyebrow">Operations</p>
+        <h1 class="wordmark">Bike Slot admin</h1>
+      </div>
+      <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 12.8A8.5 8.5 0 1 1 11.2 3.5a7 7 0 0 0 9.3 9.3z"/></svg>
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>
+      </button>
+      <p class="links"><a href="/">User page</a></p>
+    </header>
+    <nav class="tabs" role="tablist" aria-label="Views" style="display: none">
+      <button type="button" role="tab" class="tab" id="tab-camera" data-tab="camera" aria-controls="view-camera" aria-selected="true">Camera</button>
+      <button type="button" role="tab" class="tab" id="tab-statistics" data-tab="statistics" aria-controls="view-statistics" aria-selected="false" tabindex="-1">Statistics</button>
+    </nav>
+    <main class="content stages" id="view-camera" role="tabpanel" aria-labelledby="tab-camera">
+      <p class="empty" id="stages-note" hidden>No rack in the racks file is read from the vision service.</p>
+      <article class="stage" data-stage="camera">
+        <h2>1 · Live camera</h2>
+        <img alt="Newest camera picture, people blurred">
+        <p class="stage-chips" data-f="chips"></p>
+        <p class="stage-line">The picture as the camera sends it, people blurred on the camera. It is lined up with a saved picture of the rack, so the 19 hooks always sit in the same place.</p>
+      </article>
+      <article class="stage" data-stage="hooks">
+        <h2>2 · Model 1: hook classifier</h2>
+        <img alt="Each hook coloured by the hook classifier alone, with its score">
+        <p class="stage-chips" data-f="chips"></p>
+        <p class="stage-line">A small neural network (MobileNetV3, trained on this camera) looks at each hook on its own and gives the chance that a bike hangs there. Red: bike, green: free, grey: unsure. On its own it also lights up the hooks next to a bike.</p>
+      </article>
+      <article class="stage" data-stage="bikes">
+        <h2>3 · Model 2: bike finder and final answer</h2>
+        <img alt="Final answer per hook with the bikes the bike finder found">
+        <p class="stage-chips" data-f="chips"></p>
+        <p class="stage-line">Grounding DINO counts the bikes. A lit hook is freed only when it can be nothing but the overlap of a bike found next to it; when unsure, a hook stays taken. This is what the app shows.</p>
+      </article>
+    </main>
+    <main class="content" id="view-statistics" role="tabpanel" aria-labelledby="tab-statistics" style="gap: 24px" hidden>
+      <section class="section">
+        <div class="section-head">
+          <h2>Cameras</h2>
+          <div class="info">
+            <button type="button" class="info-btn" aria-label="How to read the camera cards" aria-expanded="false" aria-controls="cameras-help" aria-describedby="cameras-help">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4" r="1.3" fill="currentColor"/><path d="M8 7.2v5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <div class="info-tip" id="cameras-help" data-f="cameras-help" role="tooltip" hidden>Loading</div>
+          </div>
+        </div>
+        <div class="cards" id="cameras"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2>Data flow</h2>
+          <div class="info">
+            <button type="button" class="info-btn" aria-label="How to read the diagram" aria-expanded="false" aria-controls="flow-help" aria-describedby="flow-help">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4" r="1.3" fill="currentColor"/><path d="M8 7.2v5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </button>
+            <div class="info-tip" id="flow-help" role="tooltip" hidden>
+              <p>Pictures travel left to right: a dot runs along the arrows for each new picture. Zoomed in, a small dot runs along the thin health line for each health report.</p>
+              <p>Click or tap a box for its details and live numbers.</p>
+              <p>Zoom with the wheel, the buttons or a double-click on a step to see its parts; drag to pan, the arrow keys or the step buttons move between steps, Escape zooms out.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flow-wrap">
+          <figure class="flow" id="flow" style="margin: 0" data-level="overview" tabindex="-1">
+            <svg viewBox="0 0 1200 160" role="img" aria-label="Data flow: the camera node blurs each picture and posts it with its health to the relay, the vision service pulls the newest picture from the relay and answers free or taken per hook, the app reads that answer and applies its rules, and the user and admin pages each ask for the results in their own loop. Zoom in to see the parts of each step, side by side where they run in parallel.">
+              <defs>
+                <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" data-size="12" orient="auto-start-reverse">
+                  <path d="M0 0L10 5L0 10z" class="arrowhead"/>
+                </marker>
+                <marker id="arrow-small" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" markerUnits="userSpaceOnUse" data-size="5" orient="auto">
+                  <path d="M0 0L10 5L0 10z" class="arrowhead"/>
+                </marker>
+              </defs>
+              <path id="flow-path" d="M0 80H1198" fill="none" stroke="none"/>
+              <g class="edges">
+                <line class="edge" x1="150" y1="80" x2="260" y2="80" marker-end="url(#arrow)"/>
+                <line class="edge-health" x1="150" y1="103" x2="260" y2="103" marker-end="url(#arrow-small)"/>
+                <line class="edge" x1="412" y1="80" x2="522" y2="80" marker-end="url(#arrow)"/>
+                <line class="edge-health" x1="412" y1="103" x2="522" y2="103" marker-end="url(#arrow-small)"/>
+                <line class="edge" x1="674" y1="80" x2="784" y2="80" marker-end="url(#arrow)"/>
+                <line class="edge" x1="936" y1="80" x2="1046" y2="80" marker-end="url(#arrow)"/>
+                <!-- texts set by renderFlow; the small lines show when zoomed in, short enough for the margin beside a step -->
+                <text class="edge-label" data-edge="0" x="206" y="70" text-anchor="middle">HTTPS POST</text>
+                <text class="edge-note" data-edge="0" x="206" y="97" text-anchor="middle"></text>
+                <text class="edge-small" data-edge="0" x="206" y="76" text-anchor="middle"></text>
+                <text class="edge-label" data-edge="1" x="468" y="70" text-anchor="middle">newest picture</text>
+                <text class="edge-note" data-edge="1" x="468" y="97" text-anchor="middle"></text>
+                <text class="edge-small" data-edge="1" x="468" y="76" text-anchor="middle"></text>
+                <text class="edge-label" data-edge="2" x="730" y="70" text-anchor="middle">answer per hook</text>
+                <text class="edge-note" data-edge="2" x="730" y="97" text-anchor="middle"></text>
+                <text class="edge-small" data-edge="2" x="730" y="76" text-anchor="middle"></text>
+                <text class="edge-label" data-edge="3" x="992" y="70" text-anchor="middle">free per bike parking</text>
+                <text class="edge-note" data-edge="3" x="992" y="97" text-anchor="middle"></text>
+                <text class="edge-small" data-edge="3" x="992" y="76" text-anchor="middle"></text>
+              </g>
+              <!-- beneath the boxes, so in the overview it shows only on the arrows -->
+              <circle class="packet" id="packet" r="7" data-runs="0">
+                <animateMotion id="packet-anim" dur="3s" begin="indefinite" fill="freeze" calcMode="linear"><mpath href="#flow-path"/></animateMotion>
+              </circle>
+              <!-- the health lane from the camera through the relay into the vision service, shown only when zoomed in -->
+              <path id="health-path" d="M26 103H662" fill="none" stroke="none"/>
+              <circle class="pulse" id="pulse" r="1.6">
+                <animateMotion id="pulse-anim" dur="1.2s" begin="indefinite" fill="freeze" calcMode="linear"><mpath href="#health-path"/></animateMotion>
+              </circle>
+              <g class="node" data-node="camera" tabindex="0" role="button" aria-label="Camera node, show details">
+                <rect class="node-box" x="0" y="38" width="150" height="84" rx="12"/>
+                <g class="overview">
+                  <text class="node-title" x="16" y="66">Camera node</text>
+                  <text class="node-sub" x="16" y="85">XIAO ESP32-S3</text>
+                  <circle class="dot" cx="22" cy="107" r="5"/>
+                  <text class="node-status" x="33" y="111">...</text>
+                </g>
+                <g class="inside" aria-hidden="true"></g>
+              </g>
+              <g class="node" data-node="relay" tabindex="0" role="button" aria-label="Relay, show details">
+                <rect class="node-box" x="262" y="38" width="150" height="84" rx="12"/>
+                <g class="overview">
+                  <text class="node-title" x="278" y="66">Relay</text>
+                  <text class="node-sub" x="278" y="85">newest picture only</text>
+                  <circle class="dot" cx="284" cy="107" r="5"/>
+                  <text class="node-status" x="295" y="111">...</text>
+                </g>
+                <g class="inside" aria-hidden="true"></g>
+              </g>
+              <g class="node" data-node="vision" tabindex="0" role="button" aria-label="Vision service, show details">
+                <rect class="node-box" x="524" y="38" width="150" height="84" rx="12"/>
+                <g class="overview">
+                  <text class="node-title" x="540" y="66">Vision service</text>
+                  <text class="node-sub" x="540" y="85">free or taken per hook</text>
+                  <circle class="dot" cx="546" cy="107" r="5"/>
+                  <text class="node-status" x="557" y="111">...</text>
+                </g>
+                <g class="inside" aria-hidden="true"></g>
+              </g>
+              <g class="node" data-node="decide" tabindex="0" role="button" aria-label="Web app, show details">
+                <rect class="node-box" x="786" y="38" width="150" height="84" rx="12"/>
+                <g class="overview">
+                  <text class="node-title" x="802" y="66">Web app</text>
+                  <text class="node-sub" x="802" y="85">applies the rules</text>
+                  <circle class="dot" cx="808" cy="107" r="5"/>
+                  <text class="node-status" x="819" y="111">...</text>
+                </g>
+                <g class="inside" aria-hidden="true"></g>
+              </g>
+              <g class="node" data-node="pages" tabindex="0" role="button" aria-label="Pages, show details">
+                <rect class="node-box" x="1048" y="38" width="150" height="84" rx="12"/>
+                <g class="overview">
+                  <text class="node-title" x="1064" y="66">Pages</text>
+                  <text class="node-sub" x="1064" y="85">user and admin</text>
+                  <circle class="dot" cx="1070" cy="107" r="5"/>
+                  <text class="node-status" x="1081" y="111">...</text>
+                </g>
+                <g class="inside" aria-hidden="true"></g>
+              </g>
+            </svg>
+            <div class="flow-zoom">
+              <button type="button" id="flow-zoom-in" aria-label="Zoom in">+</button>
+              <button type="button" id="flow-zoom-out" aria-label="Zoom out">&minus;</button>
+              <button type="button" id="flow-zoom-reset">Reset</button>
+            </div>
+            <nav class="flow-steps" id="flow-steps" aria-label="Steps">
+              <button type="button" id="flow-prev" aria-label="Previous step">&larr;</button>
+              <button type="button" data-step="camera">Camera</button>
+              <button type="button" data-step="relay">Relay</button>
+              <button type="button" data-step="vision">Vision</button>
+              <button type="button" data-step="decide">Web app</button>
+              <button type="button" data-step="pages">Pages</button>
+              <button type="button" id="flow-next" aria-label="Next step">&rarr;</button>
+            </nav>
+          </figure>
+        </div>
+        <div class="flow-detail" id="flow-detail">
+          <p class="flow-title" data-f="title">Loading</p>
+          <details class="flow-how"><summary>What happens</summary><p data-f="how"></p></details>
+          <dl class="kv" data-f="live"></dl>
+        </div>
+      </section>
+
+      <section class="kpis" id="kpis" aria-live="polite">
+        <div class="stat"><p class="label">Loading</p><p class="stat-value">...</p></div>
+      </section>
+
+      <div class="duo">
+        <section class="section">
+          <div class="section-head">
+            <h2>Live activity</h2>
+            <div class="info">
+              <button type="button" class="info-btn" aria-label="How to read the activity strip" aria-expanded="false" aria-controls="activity-help" aria-describedby="activity-help">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="4" r="1.3" fill="currentColor"/><path d="M8 7.2v5.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </button>
+              <div class="info-tip" id="activity-help" role="tooltip" hidden></div>
+            </div>
+          </div>
+          <div class="activity" id="activity" role="img" aria-label="Live activity, waiting for the first update"></div>
+        </section>
+        <section class="section">
+          <h2>Detector</h2>
+          <div class="card health" id="detector">Loading</div>
+        </section>
+      </div>
+    </main>
+    <footer class="foot"><p id="updated">Waiting for the first update</p></footer>
+  </div>
+  <script src="/static/admin.js"></script>
+</body>
+</html>

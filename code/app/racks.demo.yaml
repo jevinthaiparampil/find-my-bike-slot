@@ -1,0 +1,55 @@
+# Demo with one real camera (A2, through the vision service): the four Peter Merian-Weg sections of racks.yaml plus two made-up racks.
+# A1, A3, A4, B and C are made up and fed by tools/demo_data.py. Start the app with BIKESLOT_RACKS=racks.demo.yaml.
+# A demo: true rack looks like any other on the user page; its pictures always go to the built-in stand-in.
+# B and C have placeholder coordinates and bearings; see racks.yaml for the layout format.
+racks:
+  - id: A1
+    name: Peter Merian-Weg 1
+    group: Peter Merian-Weg
+    capacity: 10
+    location: {lat: 47.546174, lng: 7.593798}
+    layout: {rows: 1, cols: 10, bearing: 118, space_m: [0.5, 1.2]}
+    demo: true
+  - id: A2
+    name: Peter Merian-Weg 2
+    group: Peter Merian-Weg
+    capacity: 19
+    location: {lat: 47.546131, lng: 7.593918}
+    layout: {rows: 1, cols: 19, bearing: 118, space_m: [0.5, 1.2]}
+    # The real camera, read through the vision service on this laptop (code/bikeslot): it fetches the pictures,
+    # decides free or occupied per hook and the app reads the result. Without data every hook counts as occupied.
+    vision: {url: "http://127.0.0.1:8000", camera: live01, poll_s: 1}
+  - id: A3
+    name: Peter Merian-Weg 3
+    group: Peter Merian-Weg
+    capacity: 19
+    location: {lat: 47.546078, lng: 7.594065}
+    layout: {rows: 1, cols: 19, bearing: 118, space_m: [0.5, 1.2]}
+    demo: true
+  - id: A4
+    name: Peter Merian-Weg 4
+    group: Peter Merian-Weg
+    capacity: 19
+    location: {lat: 47.546026, lng: 7.594212}
+    layout: {rows: 1, cols: 19, bearing: 118, space_m: [0.5, 1.2]}
+    demo: true
+  - id: B
+    name: Building 2, north side
+    capacity: 12
+    location: {lat: 47.5472, lng: 7.5969}
+    layout: {rows: 2, cols: 6, bearing: 120}
+    demo: true
+  - id: C
+    name: Visitor parking
+    capacity: 8
+    location: {lat: 47.5458, lng: 7.5975}
+    layout: {rows: 1, cols: 8, bearing: 80}
+    demo: true
+# places: where people go (buildings, entrances), offered on the map as "Where are you going?".
+places:
+  - {name: Memox entrance, location: {lat: 47.546396, lng: 7.594054}}
+  - {name: Peter Merian-Strasse 84, location: {lat: 47.546106, lng: 7.594596}}
+  - {name: Peter Merian-Strasse 88, location: {lat: 47.545848, lng: 7.595292}}
+  - {name: Faculty of Law (Peter Merian-Weg 8), location: {lat: 47.545313, lng: 7.597321}}
+  - {name: Economics library (Peter Merian-Weg 6), location: {lat: 47.545170, lng: 7.597735}}
+  - {name: Basel SBB station, location: {lat: 47.54741, lng: 7.58956}}
